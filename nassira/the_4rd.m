@@ -112,6 +112,15 @@ if license('test','Antenna_Toolbox')
     ant.NumDirectors          = 4;               % Dir1…Dir4
     ant.DirectorLength        = L_m(3:end);      % [0.436 0.430 0.434 0.430] λ
     ant.DirectorSpacing       = spacings_m(2:end);% [s32 s43 s54 s65]
+    % Add these lines after building the ant object:
+
+
+    %ant.Exciter.Radius = a_radius;   % ← this is almost certainly missing
+    %fprintf('Exciter radius set to: %.4f m\n', ant.Exciter.Radius);
+
+    % Also verify all elements loaded correctly:
+    %disp(ant)
+
 
     % --- 3D Radiation Pattern ---
     figure('Name','3D Pattern (Toolbox)','Color','white');
