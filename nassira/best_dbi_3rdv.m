@@ -202,11 +202,14 @@ if ~isempty(idx_hp)
 end
 
 %  --- E-plane polar plot ---
+%  E-plane is symmetric about the boom axis (phi=0/180 plane).
+%  Right half: polar angle 0→π (theta=0 at top, theta=180 at bottom, clockwise).
+%  Left half:  mirror at polar angle 2π-theta (same values, counter-clockwise from top).
 figure('Name','E-plane Pattern (Manual AF)','Color','white','Position',[50 50 700 600]);
 ax = polaraxes;
-polarplot(ax, theta_rad, Total_abs_dBi, 'b-', 'LineWidth', 2.5);
+polarplot(ax, theta_rad,           Total_abs_dBi, 'b-', 'LineWidth', 2.5);
 hold(ax,'on');
-polarplot(ax, theta_rad + pi, Total_abs_dBi, 'b-', 'LineWidth', 2.5);  % back lobe
+polarplot(ax, 2*pi - theta_rad,    Total_abs_dBi, 'b-', 'LineWidth', 2.5);  % left mirror
 ax.ThetaZeroLocation = 'top';
 ax.ThetaDir          = 'clockwise';
 ax.RLim              = [-20  D0_dBi + 1];
