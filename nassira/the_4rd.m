@@ -29,7 +29,7 @@ fprintf('Wavelength : %.4f m  (%.2f cm)\n', lambda, lambda*100);
 L_frac = [0.472, 0.452, 0.436, 0.430, 0.434, 0.430];
 
 % --- Element lengths [m] ---
-L_m    = L_frac * lambda*(1.015);
+L_m    = L_frac * lambda*(1.017);
 
 % --- Element positions from reflector tip [m] ---
 pos_cm = [0.00, 51.40, 110.83, 194.31, 260.72, 347.50];  % cm
@@ -39,9 +39,9 @@ pos_m  = pos_cm / 100;
 % s21, s32, s43, s54, s65
 spacings_m = diff(pos_m);
 
-% --- Wire radius [m] (Balanis: a = 0.003369 lambda) ---
-a_radius = 0.003369 * lambda;
-d_wire   = 2 * a_radius;
+% --- Wire diameter [m] — edit this line to match your tubing stock ---
+d_wire   = 0.010;                  % ← change this (metres): 0.014 = 14 mm, 0.012 = 12 mm, etc.
+a_radius = d_wire / 2;             % radius [m]
 
 % --- Element names ---
 elem_names = {'Reflector','Driven','Director 1','Director 2','Director 3','Director 4'};
@@ -53,7 +53,7 @@ for i = 1:6
     fprintf('%-14s  %8.3f  %12.2f  %14.2f\n', ...
         elem_names{i}, L_frac(i), L_m(i)*100, pos_cm(i));
 end
-fprintf('\nWire diameter : %.2f mm (a = %.4f lambda)\n', d_wire*1e3, a_radius/lambda);
+fprintf('\nWire diameter : %.2f mm  (d/λ = %.5f)\n', d_wire*1e3, d_wire/lambda);
 fprintf('Total boom    : %.2f cm  (%.4f lambda)\n', pos_cm(end), pos_m(end)/lambda);
 
 %% =========================================================================
@@ -116,7 +116,6 @@ if license('test','Antenna_Toolbox')
     % --- 3D Radiation Pattern ---
     figure('Name','3D Pattern (Toolbox)','Color','white');
     pattern(ant, f0);
-    %pattern(yagi,145.8e6,-180:180,0);
     title('3D Radiation Pattern — Single Yagi  145.8 MHz','FontSize',12);
     colorbar;
 
