@@ -28,12 +28,8 @@ fprintf('Wavelength : %.4f m  (%.2f cm)\n', lambda, lambda*100);
 % --- Element lengths [fraction of lambda] ---
 L_frac = [0.472, 0.452, 0.436, 0.430, 0.434, 0.430];
 
-
 % --- Element lengths [m] ---
-L_m = L_frac * lambda;
-
-% Increase ONLY the driven element by 1%
-L_m(2) = L_m(2) * 1.01;
+L_m    = L_frac * lambda *(1.017);
 
 % --- Element positions from reflector tip [m] ---
 pos_cm = [0.00, 51.40, 110.83, 194.31, 260.72, 347.50];  % cm
@@ -112,7 +108,7 @@ if license('test','Antenna_Toolbox')
     ant                       = yagiUda();
     ant.Exciter.Length        = L_m(2);          % driven element  0.452 λ
     ant.ReflectorLength       = L_m(1);          % reflector       0.472 λ
-    ant.ReflectorSpacing = spacings_m(1) * 0.95;  % s21 = 0.250 λ
+    ant.ReflectorSpacing      = spacings_m(1);   % s21 = 0.250 λ
     ant.NumDirectors          = 4;               % Dir1…Dir4
     ant.DirectorLength        = L_m(3:end);      % [0.436 0.430 0.434 0.430] λ
     ant.DirectorSpacing       = spacings_m(2:end);% [s32 s43 s54 s65]
