@@ -226,7 +226,7 @@ function ant = buildYagiFromWires(cfg)
                 'MetalRadius',   cfg.wires(k,7) );
         end
     end
-
+  
     % ---- Concatenate all segments into a single geometry --------------
     geom = customAntennaGeometry;
     for k = 1:N

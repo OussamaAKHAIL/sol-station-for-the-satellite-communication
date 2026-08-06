@@ -80,7 +80,7 @@ for i = 1:4
     text(xp, hlf+4, elem_names{i}, 'HorizontalAlignment','center', ...
          'FontSize',8, 'Color', colors{i});
 end
-plot([0 pos_cm(end)],[0 0],'k-','LineWidth',1.5);           % boom
+plot([0 pos_cm(end)],[0 0],'k-','LineWidth',1.5);           % boom 
 ref = lambda/2 * 100;
 yline( ref,'--','color',[.5 .5 .5],'LineWidth',1,'Label','\lambda/2');
 yline(-ref,'--','color',[.5 .5 .5],'LineWidth',1);
