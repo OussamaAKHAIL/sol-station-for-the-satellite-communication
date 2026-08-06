@@ -145,17 +145,17 @@ legend({'Boom','VHF elements (145.8 MHz)','UHF elements (437.8 MHz)'}, 'Location
 set(gca,'FontSize',10);
 
 %% =========================================================================
-% 5. ANTENNA TOOLBOX PATH
+% 5. ANTENNA TOOLBOX PATH (3D and 2D PATTERNS)
 %% =========================================================================
 if license('test','Antenna_Toolbox')
     fprintf('\n[Antenna Toolbox detected — generating physical Yagi models]\n');
     antV = createToolboxYagi(V);
     antU = createToolboxYagi(U);
     
-    % --- VHF Radiation Patterns ---
+    % --- VHF 3D Radiation Patterns ---
     figure('Name','VHF 3D Total Pattern — Antenna Toolbox','Color','white');
     pattern(antV, V.f0);
-    title('VHF 4-Element Yagi — Total Directivity (145.8 MHz)','FontSize',12);
+    title('VHF 4-Element Yagi — Total Directivity 3D (145.8 MHz)','FontSize',12);
     
     figure('Name','VHF 3D RHCP Pattern — Antenna Toolbox','Color','white');
     pattern(antV, V.f0, 'Polarization', 'RHCP');
@@ -164,11 +164,20 @@ if license('test','Antenna_Toolbox')
     figure('Name','VHF 3D LHCP Pattern — Antenna Toolbox','Color','white');
     pattern(antV, V.f0, 'Polarization', 'LHCP');
     title('VHF 4-Element Yagi — 3D LHCP Pattern (145.8 MHz)','FontSize',12);
+
+    % --- VHF 2D Radiation Patterns ---
+    figure('Name','VHF 2D Azimuth Pattern — Antenna Toolbox','Color','white');
+    patternAzimuth(antV, V.f0);
+    title('VHF 4-Element Yagi — 2D Azimuth Cut (145.8 MHz)','FontSize',12);
+
+    figure('Name','VHF 2D Elevation Pattern — Antenna Toolbox','Color','white');
+    patternElevation(antV, V.f0);
+    title('VHF 4-Element Yagi — 2D Elevation Cut (145.8 MHz)','FontSize',12);
     
-    % --- UHF Radiation Patterns ---
+    % --- UHF 3D Radiation Patterns ---
     figure('Name','UHF 3D Total Pattern — Antenna Toolbox','Color','white');
     pattern(antU, U.f0);
-    title('UHF 10-Element Yagi — Total Directivity (437.8 MHz)','FontSize',12);
+    title('UHF 10-Element Yagi — Total Directivity 3D (437.8 MHz)','FontSize',12);
     
     figure('Name','UHF 3D RHCP Pattern — Antenna Toolbox','Color','white');
     pattern(antU, U.f0, 'Polarization', 'RHCP');
@@ -177,6 +186,15 @@ if license('test','Antenna_Toolbox')
     figure('Name','UHF 3D LHCP Pattern — Antenna Toolbox','Color','white');
     pattern(antU, U.f0, 'Polarization', 'LHCP');
     title('UHF 10-Element Yagi — 3D LHCP Pattern (437.8 MHz)','FontSize',12);
+
+    % --- UHF 2D Radiation Patterns ---
+    figure('Name','UHF 2D Azimuth Pattern — Antenna Toolbox','Color','white');
+    patternAzimuth(antU, U.f0);
+    title('UHF 10-Element Yagi — 2D Azimuth Cut (437.8 MHz)','FontSize',12);
+
+    figure('Name','UHF 2D Elevation Pattern — Antenna Toolbox','Color','white');
+    patternElevation(antU, U.f0);
+    title('UHF 10-Element Yagi — 2D Elevation Cut (437.8 MHz)','FontSize',12);
 
     % --- Input Impedance Sweeps ---
     fV_sweep = linspace(136e6, 155e6, 161);
@@ -205,7 +223,7 @@ resV = manualYagiPattern(V);
 resU = manualYagiPattern(U);
 
 %% =========================================================================
-% 7. E-PLANE CARTESIAN AND POLAR PLOTS
+% 7. E-PLANE CARTESIAN AND POLAR PLOTS (MANUAL 2D)
 %% =========================================================================
 plotYagiCuts(V, resV);
 plotYagiCuts(U, resU);
@@ -257,7 +275,7 @@ function ant = createToolboxYagi(A)
     ant.Exciter.Width = 2*A.wire_radius;
     
     % FIXED TILT AXIS: 
-    % Tilt around Y-axis (or [0 1 0]) rotates the exciter 90° out-of-plane
+    % Tilt around Y-axis (or [0 1 0]) rotates the exciter 90 degrees out-of-plane
     % relative to the reflector/directors without rotating down the boom line.
     ant.Exciter.Tilt = 90;
     ant.Exciter.TiltAxis = [0 1 0];
