@@ -5,6 +5,8 @@
 %  Two scripts in one:
 %    Section A — uses MATLAB Antenna Toolbox (yagiUda) if available
 %    Section B — manual array-factor + half-dipole element pattern (no toolbox needed)
+
+% Z ~ 86.81+j27.48
 %% =========================================================================
 clear; clc; close all;
 
