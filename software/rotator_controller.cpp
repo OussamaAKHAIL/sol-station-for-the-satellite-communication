@@ -44,9 +44,24 @@
 // ---------- user-tunable parameters ----------
 const float MAGNETIC_DECLINATION = 0.0;   // degrees, add for your location
 const float POSITION_TOLERANCE   = 1.0;   // degrees; stop moving once inside this band
-const int   AZ_STEP_CHUNK        = 4;     // motor steps issued per control-loop pass
-const int   EL_STEP_CHUNK        = 4;
+const float NUDGE_DEGREES        = 0.2;   // physical angle moved per control-loop pass (both axes)
 const unsigned long CONTROL_PERIOD_MS = 50; // how often the feedback loop runs
+
+// ---------- gear train (converts motor steps <-> real output-shaft degrees) ----------
+// Azimuth uses a 100:12 reduction (motor pulley/gear = 12 teeth, output = 100 teeth),
+// so the motor must turn 100/12 times for the output shaft to turn once.
+// Elevation is direct 1:1 (motor shaft = output shaft).
+const float MOTOR_STEPS_PER_REV = 200.0;        // 1.8 deg/step motor, full-step; edit if different
+const float MICROSTEPS          = 1.0;          // driver microstepping (1,2,4,8,16...); edit to match jumpers
+const float AZ_GEAR_RATIO       = 100.0 / 12.0; // motor revs per 1 output rev
+const float EL_GEAR_RATIO       = 1.0;          // motor revs per 1 output rev
+
+const float AZ_STEPS_PER_DEG = (MOTOR_STEPS_PER_REV * MICROSTEPS * AZ_GEAR_RATIO) / 360.0;
+const float EL_STEPS_PER_DEG = (MOTOR_STEPS_PER_REV * MICROSTEPS * EL_GEAR_RATIO) / 360.0;
+
+// desired *physical* (output-shaft) slew rate; steps/sec for each motor are derived from this
+const float MAX_ANGULAR_SPEED_DEG_S = 20.0;
+const float MAX_ANGULAR_ACCEL_DEG_S2 = 15.0;
 
 // ---------- pin assignments (STEP/DIR driver boards, e.g. A4988/DRV8825) ----------
 const int AZ_STEP_PIN = 3;
@@ -72,10 +87,12 @@ void setup() {
   pinMode(ENABLE_PIN, OUTPUT);
   digitalWrite(ENABLE_PIN, LOW);   // enable drivers
 
-  azStepper.setMaxSpeed(800);
-  azStepper.setAcceleration(400);
-  elStepper.setMaxSpeed(800);
-  elStepper.setAcceleration(400);
+  // az has an 8.33:1 reduction vs el's 1:1, so its motor must spin ~8.33x
+  // faster in raw steps/sec to achieve the same real-world deg/s
+  azStepper.setMaxSpeed(MAX_ANGULAR_SPEED_DEG_S * AZ_STEPS_PER_DEG);
+  azStepper.setAcceleration(MAX_ANGULAR_ACCEL_DEG_S2 * AZ_STEPS_PER_DEG);
+  elStepper.setMaxSpeed(MAX_ANGULAR_SPEED_DEG_S * EL_STEPS_PER_DEG);
+  elStepper.setAcceleration(MAX_ANGULAR_ACCEL_DEG_S2 * EL_STEPS_PER_DEG);
 
   Wire.begin();
   if (!bno.begin()) {
@@ -132,10 +149,12 @@ void driveTowardTarget() {
   float elErr = targetEl - currentEl;
 
   if (fabs(azErr) > POSITION_TOLERANCE) {
-    azStepper.move(azErr > 0 ? AZ_STEP_CHUNK : -AZ_STEP_CHUNK);
+    long azChunkSteps = lround(NUDGE_DEGREES * AZ_STEPS_PER_DEG);
+    azStepper.move(azErr > 0 ? azChunkSteps : -azChunkSteps);
   }
   if (fabs(elErr) > POSITION_TOLERANCE) {
-    elStepper.move(elErr > 0 ? EL_STEP_CHUNK : -EL_STEP_CHUNK);
+    long elChunkSteps = lround(NUDGE_DEGREES * EL_STEPS_PER_DEG);
+    elStepper.move(elErr > 0 ? elChunkSteps : -elChunkSteps);
   }
 }
 
